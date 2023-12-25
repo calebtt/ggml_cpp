@@ -59,7 +59,7 @@ static float reference_quantization_error(ggml_type_traits_t & qfns, size_t test
     qfns.to_float(tmp_q.data(), tmp_out.data(), test_size);
 
     qfns.from_float_reference(test_data, tmp_q.data(), test_size);
-    qfns.to_float(tmp_q.data(), tmp_out_ref.data(), test_size);
+    qfns.to_float(tmp_q.data(), tmp_out_ref.data(), (int)test_size);
 
     return array_rmse(tmp_out.data(), tmp_out_ref.data(), test_size);
 }
@@ -73,9 +73,8 @@ static float dot_product(const float * a1, const float * a2, size_t test_size) {
 }
 
 // Total dot product error
-static float dot_product_error(
-    ggml_type_traits_t & qfns, size_t test_size, const float * test_data1, const float *test_data2
-) {
+float dot_product_error(ggml_type_traits_t & qfns, size_t test_size, const float * test_data1, const float *test_data2)
+{
     std::vector<uint8_t> tmp_q1(2*test_size);
     std::vector<uint8_t> tmp_q2(2*test_size);
 
@@ -92,7 +91,8 @@ static float dot_product_error(
     return fabsf(result - dot_ref) / test_size;
 }
 
-int main(int argc, char * argv[]) {
+int main(int argc, char * argv[])
+{
     bool verbose = false;
     const size_t test_size = 32 * 128;
 
@@ -125,7 +125,8 @@ int main(int argc, char * argv[]) {
     int num_failed = 0;
     bool failed = false;
 
-    for (int i = 0; i < GGML_TYPE_COUNT; i++) {
+    for (int i = 0; i < GGML_TYPE_COUNT; i++)
+    {
         ggml_type type = (ggml_type) i;
         ggml_type_traits_t qfns = ggml_internal_get_type_traits(type);
 

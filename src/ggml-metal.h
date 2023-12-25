@@ -22,8 +22,8 @@
 #include "ggml.h"
 #include "ggml-backend.h"
 
-#include <stddef.h>
-#include <stdbool.h>
+#include <cstddef>
+#include <cstdbool>
 
 // max memory buffers that can be mapped to the device
 #define GGML_METAL_MAX_BUFFERS 64

@@ -237,7 +237,7 @@ ggml_tallocr_t ggml_tallocr_new(void * data, size_t size, size_t alignment) {
 
     ggml_tallocr_t alloc = (ggml_tallocr_t)malloc(sizeof(struct ggml_tallocr));
 
-    *alloc = (struct ggml_tallocr) {
+    *alloc = ggml_tallocr {
         /*.buffer        = */ buffer,
         /*.buffer_owned  = */ true,
         /*.base          = */ ggml_backend_buffer_get_base(buffer),
@@ -285,7 +285,7 @@ ggml_tallocr_t ggml_tallocr_new_from_backend(struct ggml_backend * backend, size
 ggml_tallocr_t ggml_tallocr_new_from_buffer(struct ggml_backend_buffer * buffer) {
     ggml_tallocr_t alloc = (ggml_tallocr_t)malloc(sizeof(struct ggml_tallocr));
 
-    *alloc = (struct ggml_tallocr) {
+    *alloc = ggml_tallocr {
         /*.buffer        = */ buffer,
         /*.buffer_owned  = */ false,
         /*.base          = */ ggml_backend_buffer_get_base(buffer),
@@ -347,7 +347,7 @@ struct ggml_gallocr {
 ggml_gallocr_t ggml_gallocr_new(void) {
     ggml_gallocr_t galloc = (ggml_gallocr_t)malloc(sizeof(struct ggml_gallocr));
 
-    *galloc = (struct ggml_gallocr) {
+    *galloc = ggml_gallocr{
         /*.talloc           = */ NULL,
         /*.hash_set         = */ {0},
         /*.hash_values      = */ NULL,
@@ -382,7 +382,7 @@ void ggml_gallocr_free(ggml_gallocr_t galloc) {
 
 void ggml_gallocr_set_parse_seq(ggml_gallocr_t galloc, const int * list, int n) {
     free(galloc->parse_seq);
-    galloc->parse_seq = malloc(sizeof(int) * n);
+    galloc->parse_seq = static_cast<int*>(malloc(sizeof(int) * n));
 
     for (int i = 0; i < n; i++) {
         galloc->parse_seq[i] = list[i];
@@ -629,7 +629,8 @@ static void ggml_tallocr_alloc_graph_impl(ggml_gallocr_t galloc, struct ggml_cgr
     }
 }
 
-size_t ggml_gallocr_alloc_graph(ggml_gallocr_t galloc, ggml_tallocr_t talloc, struct ggml_cgraph * graph) {
+size_t ggml_gallocr_alloc_graph(ggml_gallocr_t galloc, ggml_tallocr_t talloc, struct ggml_cgraph * graph)
+{
     size_t hash_size = graph->visited_hash_table.size;
 
     // check if the hash table is initialized and large enough
@@ -640,9 +641,9 @@ size_t ggml_gallocr_alloc_graph(ggml_gallocr_t galloc, ggml_tallocr_t talloc, st
         if (galloc->hash_values != NULL) {
             free(galloc->hash_values);
         }
-        galloc->hash_set.keys = malloc(sizeof(struct ggml_tensor *) * hash_size);
+        galloc->hash_set.keys = static_cast<ggml_tensor**>(malloc(sizeof(struct ggml_tensor*) * hash_size));
         galloc->hash_set.size = hash_size;
-        galloc->hash_values = malloc(sizeof(struct hash_node) * hash_size);
+        galloc->hash_values = static_cast<hash_node*>(malloc(sizeof(struct hash_node) * hash_size));
     }
 
     // reset hash table
@@ -668,7 +669,7 @@ void ggml_gallocr_alloc_graph_n(ggml_gallocr_t galloc, struct ggml_cgraph * grap
     // alloc hash_values if needed
     if (galloc->hash_values == NULL || galloc->hash_values_size < hash_size) {
         free(galloc->hash_values);
-        galloc->hash_values      = malloc(sizeof(struct hash_node) * hash_size);
+        galloc->hash_values = static_cast<hash_node*>(malloc(sizeof(struct hash_node) * hash_size));
         galloc->hash_values_size = hash_size;
     }
 
@@ -699,7 +700,8 @@ struct ggml_allocr {
 
 static ggml_allocr_t ggml_allocr_new_impl(ggml_tallocr_t talloc) {
     ggml_allocr_t alloc = (ggml_allocr_t)malloc(sizeof(struct ggml_allocr));
-    *alloc = (struct ggml_allocr) {
+    *alloc = ggml_allocr
+    {
         /*.talloc = */ talloc,
         /*.galloc = */ ggml_gallocr_new(),
     };

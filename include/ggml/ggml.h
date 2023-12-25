@@ -2142,7 +2142,10 @@ extern "C" {
     GGML_API char *         gguf_get_tensor_name  (const struct gguf_context * ctx, int i);
     GGML_API enum ggml_type gguf_get_tensor_type  (const struct gguf_context * ctx, int i);
 
+
+
     // overrides existing values or adds a new one
+    // TODO template this and metaprogram a class template to return whatever GGUF_TYPE_* is needed
     GGML_API void gguf_set_val_u8  (struct gguf_context * ctx, const char * key, uint8_t  val);
     GGML_API void gguf_set_val_i8  (struct gguf_context * ctx, const char * key, int8_t   val);
     GGML_API void gguf_set_val_u16 (struct gguf_context * ctx, const char * key, uint16_t val);
@@ -2229,20 +2232,24 @@ extern "C" {
     typedef void (*ggml_from_float_t)(const float * GGML_RESTRICT x, void  * GGML_RESTRICT y, int k);
     typedef void (*ggml_vec_dot_t)   (const int n, float * GGML_RESTRICT s, const void * GGML_RESTRICT x, const void * GGML_RESTRICT y);
 
-    typedef struct {
-        const char      * type_name;
-        int               blck_size;
-        size_t            type_size;
-        bool              is_quantized;
-        ggml_to_float_t   to_float;
-        ggml_from_float_t from_float;
-        ggml_from_float_t from_float_reference;
-        ggml_vec_dot_t    vec_dot;
-        enum ggml_type    vec_dot_type;
-    } ggml_type_traits_t;
+    struct ggml_type_traits_t;
 
-    GGML_API ggml_type_traits_t ggml_internal_get_type_traits(enum ggml_type type);
+    //GGML_API ggml_type_traits_t ggml_internal_get_type_traits(ggml_type type);
+    GGML_API struct ggml_type_traits_t ggml_internal_get_type_traits(enum ggml_type type);
 
 #ifdef  __cplusplus
+
+    struct ggml_type_traits_t
+    {
+        const char* type_name{};
+        int               blck_size{};
+        size_t            type_size{};
+        bool              is_quantized{};
+        ggml_to_float_t   to_float{};
+        ggml_from_float_t from_float{};
+        ggml_from_float_t from_float_reference{};
+        ggml_vec_dot_t    vec_dot{};
+        enum ggml_type    vec_dot_type{ggml_type::GGML_TYPE_COUNT};
+    };
 }
 #endif

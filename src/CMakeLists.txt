@@ -1,9 +1,9 @@
 if (GGML_ALL_WARNINGS)
     if (NOT MSVC)
-        add_compile_options(-Wunused -Wextra -Wcast-qual -Wdouble-promotion)
-        add_compile_options("$<$<COMPILE_LANGUAGE:C>:-Wshadow;-Wno-unused-function;-Wmissing-prototypes>")
+        add_compile_options(-Wunused -Wextra -Wcast-qual -Wdouble-promotion -std=c++20)
+        add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-Wshadow;-Wno-unused-function;-Wmissing-prototypes>")
     else()
-        # todo : windows
+        add_compile_options("-std:c++latest")
     endif()
 endif()
 
@@ -315,10 +315,10 @@ if (GGML_PERF)
 endif()
 
 add_library(${TARGET}
-    ggml.c
-    ggml-alloc.c
-    ggml-backend.c
-    ggml-quants.c
+    "ggml.cpp"
+    "ggml-alloc.cpp"
+    "ggml-backend.cpp"
+    "ggml-quants.cpp"
     ggml-impl.h
     ggml-backend-impl.h
     ../include/ggml/ggml.h

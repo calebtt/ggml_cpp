@@ -4,11 +4,11 @@
 
 // GGML internal header
 
-#include <assert.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <string.h> // memcpy
-#include <math.h>   // fabsf
+#include <cassert>
+#include <cstddef>
+#include <cstdbool>
+#include <cstring> // memcpy
+#include <cmath>   // fabsf
 
 #ifdef __cplusplus
 extern "C" {
