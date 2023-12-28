@@ -3,6 +3,8 @@ The conversion to C++ at present has utterly destroyed the performance, most lik
 Plan for that is changing to use references or copies. I hope that those will enable the same optimizations (or better) that restrict had previously applied.
 Unit tests do appear to pass, so there is hope.
 
+C++ conversion currently under the 'converted' branch.
+
 # ggml
 
 [Roadmap](https://github.com/users/ggerganov/projects/7) / [Manifesto](https://github.com/ggerganov/llama.cpp/discussions/205)
